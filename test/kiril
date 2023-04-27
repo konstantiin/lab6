@@ -1,0 +1,14 @@
+add
+HumanBeing:
+	name: ылаоиулеоп
+	coordinates:
+	    x: 1
+	    y: 12
+	realHero: 1
+	hasToothpick: 0
+	impactSpeed:
+	weaponType: 2
+	mood: 1
+	car:
+		ушацш:
+		cool: true
