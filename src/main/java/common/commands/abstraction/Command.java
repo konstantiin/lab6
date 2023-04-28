@@ -1,18 +1,20 @@
 package common.commands.abstraction;
 
-import common.commands.launcher.CommandsLauncher;
+import server.launcher.CommandsLauncher;
 import client.reading.readers.Reader;
+
+import java.io.Serializable;
 
 /**
  * Abstract command class
  */
-public abstract class Command {
+public abstract class Command implements Serializable {
     protected CommandsLauncher<?> collection;
+    protected boolean send = true;
     /**
      * default constructor, initialize fields as null
      */
-    public Command() {
-    }
+    public boolean ifSend(){ return  send;}
     public void setCollection(CommandsLauncher<?> collect){collection=collect;}
 
 

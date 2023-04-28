@@ -1,9 +1,11 @@
 package common.StoredClasses.enums;
 
+import java.io.Serializable;
+
 /**
  * stored class
  */
-public enum WeaponType {
+public enum WeaponType implements Serializable {
     PISTOL,
     SHOTGUN,
     RIFLE,

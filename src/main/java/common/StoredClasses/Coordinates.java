@@ -4,11 +4,13 @@ import common.StoredClasses.annotations.Boundaries;
 import client.reading.generators.CoordinatesGenerator;
 import client.reading.generators.Generator;
 
+import java.io.Serializable;
+
 
 /**
  * stored class
  */
-public class Coordinates implements Checkable {
+public class Coordinates implements Checkable, Serializable {
     private final @Boundaries(lowerBound = "-570", upperBound = "570") float x; //Максимальное значение поля: 570
     private final @Boundaries(lowerBound = "-294", upperBound = "294") long y; //Максимальное значение поля: 294
 

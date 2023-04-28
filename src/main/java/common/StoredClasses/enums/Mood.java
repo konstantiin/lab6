@@ -1,9 +1,11 @@
 package common.StoredClasses.enums;
 
+import java.io.Serializable;
+
 /**
  * stored class
  */
-public enum Mood {
+public enum Mood implements Serializable {
     SORROW,
     LONGING,
     GLOOM,

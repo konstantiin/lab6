@@ -1,4 +1,4 @@
-package common.commands.launcher;
+package server.launcher;
 
 
 import common.StoredClasses.Coordinates;
@@ -9,6 +9,7 @@ import common.exceptions.inputExceptions.InputException;
 import common.exceptions.inputExceptions.UnknownCommandException;
 import client.App;
 import client.reading.readers.OfflineReader;
+import server.main.Main;
 
 import java.io.File;
 import java.util.*;
@@ -103,8 +104,8 @@ public class CommandsLauncher<T extends Comparable<T>> {
     /**
      * prints information about collection
      */
-    public void info() {
-        System.out.println("TreeSet " + collection + " of size " + collection.size());// возможно стоит вывести еще какую-то информацию
+    public String info() {
+        return "TreeSet " + collection + " of size " + collection.size();// возможно стоит вывести еще какую-то информацию
     }
 
     /**
@@ -164,12 +165,8 @@ public class CommandsLauncher<T extends Comparable<T>> {
     /**
      * shows elements of collection
      */
-    public void show() {
-        System.out.println("Collection:");
-        for (var item : collection) {
-            System.out.println(item);
-        }
-        System.out.println("Collection ended");
+    public List<Object> show() {
+        return new ArrayList<>(collection);
     }
 
     /**
@@ -221,6 +218,6 @@ public class CommandsLauncher<T extends Comparable<T>> {
      */
     @SuppressWarnings("unchecked")
     public void save() {
-        App.XMLInput.writeArr(new ArrayList<>((Collection< HumanBeing>) collection));
+        Main.XMLInput.writeArr(new ArrayList<>((Collection< HumanBeing>) collection));
     }
 }

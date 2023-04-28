@@ -3,7 +3,7 @@ package common.commands.concreteCommands.serverOnly;
 import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * filter_contains_name

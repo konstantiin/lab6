@@ -159,7 +159,6 @@ public abstract class Reader {
         commands.put("update", new Update());
         commands.put("remove_by_id", new RemoveById());
         commands.put("clear", new Clear());
-        commands.put("save", new Save());
         commands.put("execute_script", new ExecuteScript());
         commands.put("exit", new Exit());
         commands.put("add_if_min", new AddIfMin());
@@ -267,6 +266,7 @@ public abstract class Reader {
         if (command == null) {
             throw new UnknownCommandException(metName);
         }
+        command.setArgs(this);
         return command;
     }
 

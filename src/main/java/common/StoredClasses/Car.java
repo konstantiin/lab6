@@ -4,10 +4,12 @@ import common.StoredClasses.annotations.NotNull;
 import client.reading.generators.CarGenerator;
 import client.reading.generators.Generator;
 
+import java.io.Serializable;
+
 /**
  * stored class
  */
-public class Car implements Checkable {
+public class Car implements Checkable, Serializable {
     private final @NotNull String name;
     private final @NotNull Boolean cool;
 

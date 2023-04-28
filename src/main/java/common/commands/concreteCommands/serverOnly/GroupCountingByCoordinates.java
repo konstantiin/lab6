@@ -1,11 +1,10 @@
 package common.commands.concreteCommands.serverOnly;
 
 
-import common.StoredClasses.Coordinates;
 import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * group_counting_by_coordinates

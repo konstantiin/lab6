@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * help command
  */
 public class Help extends Command {
+    public Help(){
+        send = false;
+    }
     @Override
     public Object execute() {
         try (InputStream inputStream = getClass().getResourceAsStream("/help.txt")) {

@@ -1,10 +1,9 @@
 package common.commands.concreteCommands.serverOnly;
 
-import client.reading.readers.OfflineReader;
 import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * clear command

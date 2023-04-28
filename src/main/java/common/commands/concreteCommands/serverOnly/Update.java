@@ -6,7 +6,7 @@ import client.reading.readers.Reader;
 
 import java.math.BigInteger;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * update command

@@ -11,12 +11,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * execute_script command
  */
 public class ExecuteScript extends Command {
+    public ExecuteScript (){
+        send = false;
+    }
     private File script;
     private OfflineReader offlineReader;
     private boolean isOk = true;

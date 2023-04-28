@@ -3,13 +3,16 @@ package common.commands.concreteCommands.clientOnly;
 import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
 
-import static common.commands.launcher.CommandsLauncher.currentScripts;
+import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
  * exit
  */
 public class Exit extends Command {
     private Reader input;
+    public Exit(){
+        send = false;
+    }
     @Override
     public Object execute() {
         input.closeStream();

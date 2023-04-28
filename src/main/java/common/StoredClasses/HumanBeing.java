@@ -10,13 +10,14 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import client.reading.generators.Generator;
 import client.reading.generators.HumanBeingGenerator;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @XStreamAlias("human")
-public class HumanBeing implements Comparable<HumanBeing>, Checkable {
+public class HumanBeing implements Comparable<HumanBeing>, Checkable, Serializable {
     /**
      * stores ids that are busy
      */
