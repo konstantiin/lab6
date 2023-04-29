@@ -4,23 +4,35 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Set;
 
 public class ConnectToClient {
     private DatagramChannel server = null;
+    private Selector selector;
     private SocketAddress addr, client;
     public ConnectToClient(int port){
         addr = new InetSocketAddress(2223);
         try {
             server = DatagramChannel.open();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
             server.bind(addr);
+            selector = Selector.open();
+            server.configureBlocking(false);
+            server.register(selector, SelectionKey.OP_READ);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public Set<SelectionKey> getKeys(){
+        try{
+            selector.select();
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return selector.selectedKeys();
     }
     public Object getCommand() {
         int size = 0;

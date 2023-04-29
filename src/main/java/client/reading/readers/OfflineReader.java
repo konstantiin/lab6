@@ -25,7 +25,6 @@ public class OfflineReader extends Reader {
 
     /**
      * @param file - input file
-     * @param col  - managed collection
      * @param tree - object tree to read
      */
     public OfflineReader(FileInputStream file, Node tree) {

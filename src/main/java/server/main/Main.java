@@ -27,10 +27,16 @@ public class Main {
         CommandsLauncher<HumanBeing> collection = new CommandsLauncher<>(set);
         boolean work = true;
         while (work){
-            Command command = (Command) server.getCommand();
-            command.setCollection(collection);
-            Object result = command.execute();
-            server.send(result);
+            var keys = server.getKeys();
+            for (var x: keys){
+                if (x.isValid()) {
+                    Command command = (Command) server.getCommand();
+                    command.setCollection(collection);
+                    Object result = command.execute();
+                    server.send(result);
+                }
+            }
+
         }
 
     }
