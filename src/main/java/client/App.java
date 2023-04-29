@@ -22,14 +22,14 @@ public class App {
      * main method
      * creates managed collection, parses xml file and execute common.commands from System.in
      */
-    public static int main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, UnknownHostException {
         ConnectToServer server = null;
-        String host = "helios.cs.ifmo.ru";
-        int port = 2223;
+        int port = 6050;
         boolean needConnect = true;
         while(needConnect) {
             try {
-                server = new ConnectToServer(InetAddress.getByName("helios.cs.ifmo.ru"), port);
+                InetAddress host = InetAddress.getLocalHost();
+                server = new ConnectToServer(host, port);
                 needConnect = false;
             } catch (IOException e) {
                 System.out.println("Connection error. (Retry?(y/n)");
@@ -40,7 +40,7 @@ public class App {
         }
         if (server == null){
             System.out.println("Connection failed.");
-            return 0;
+            return ;
         }
 
         OnlineReader console = new OnlineReader(System.in, Node.generateTree(HumanBeing.class, "HumanBeing"));
@@ -68,6 +68,5 @@ public class App {
             e.printStackTrace();
             TimeUnit.SECONDS.sleep(60); // для дебага
         }
-        return 0;
     }
 }

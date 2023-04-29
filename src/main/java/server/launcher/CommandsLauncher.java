@@ -73,10 +73,10 @@ public class CommandsLauncher<T extends Comparable<T>> {
      */
     public List<HumanBeing> filterContainsName(String pattern) {
         List<HumanBeing> result = new ArrayList<>();
-        for (T element : collection) {
-            HumanBeing human = (HumanBeing) element;
+        collection.forEach(el -> {
+            HumanBeing human = (HumanBeing) el;
             if (human.getName().contains(pattern)) result.add(human);
-        }
+        });
         return result;
     }
 
@@ -173,12 +173,11 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * @return sum of impactSpeed
      */
     public double sumOfImpactSpeed() {
-        double sum = 0.0;
-        for (var element : collection) {
-            HumanBeing human = (HumanBeing) element;
-            sum += human.getImpactSpeed();
-        }
-        return sum;
+        Float sum = (float) 0;
+        final ArrayList <Float> arr = new ArrayList<>();
+        collection.forEach((e) -> arr.add(((HumanBeing)e).getImpactSpeed()));
+        return (double) arr.stream()
+                        .reduce(sum, Float::sum);
     }
 
     /**

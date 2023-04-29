@@ -1,6 +1,7 @@
 package server.connection;
 
 import java.io.*;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -22,13 +23,17 @@ public class ConnectToClient {
             selector = Selector.open();
             server.configureBlocking(false);
             server.register(selector, SelectionKey.OP_READ);
+        } catch (BindException b) {
+            System.out.println(port);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
     public Set<SelectionKey> getKeys(){
         try{
+            System.out.println(1);
             selector.select();
+            System.out.println(1);
         } catch (IOException e){
             throw new RuntimeException(e);
         }

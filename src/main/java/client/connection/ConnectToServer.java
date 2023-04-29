@@ -56,7 +56,6 @@ public class ConnectToServer {
             byte[] size = new byte[4];
             ByteBuffer.wrap(size).putInt(obj.length);
 
-            System.out.println(obj.length);
             channel.send(ByteBuffer.wrap(size), socket);
             ByteBuffer data = ByteBuffer.wrap(obj);
             channel.send(data, socket);

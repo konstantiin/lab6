@@ -22,12 +22,15 @@ public class Main {
     public static ParseXml XMLInput = ParseXml.getXMLInput("input.xml");
 
     public static void main(String []args){
-        var server = new ConnectToClient(2223);
+        int port = 6050;
+        var server = new ConnectToClient(6050);
+        System.out.println("Server is running. Port 6050");
         var set = new TreeSet<HumanBeing>();
         CommandsLauncher<HumanBeing> collection = new CommandsLauncher<>(set);
         boolean work = true;
         while (work){
             var keys = server.getKeys();
+            System.out.println(keys.size());
             for (var x: keys){
                 if (x.isValid()) {
                     Command command = (Command) server.getCommand();
