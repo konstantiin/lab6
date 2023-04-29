@@ -15,7 +15,7 @@ public class ConnectToClient {
     private Selector selector;
     private SocketAddress addr, client;
     public ConnectToClient(int port){
-        addr = new InetSocketAddress(2223);
+        addr = new InetSocketAddress(port);
         try {
             server = DatagramChannel.open();
             server.bind(addr);

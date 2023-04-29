@@ -6,21 +6,26 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Scanner;
 
 public class ConnectToServer {
 
     private final InetSocketAddress socket;
     private final DatagramChannel channel;
 
-    public ConnectToServer(InetAddress host, int port){
+    public ConnectToServer(InetAddress host, int port) throws IOException {
         socket = new InetSocketAddress(host, port);
-        try {
-            channel = DatagramChannel.open();
-        } catch (IOException e) {
-            throw new RuntimeException(e);// обработать
-        }
+        channel = DatagramChannel.open();
     }
-    public Object getResponse(){
+    private boolean ifReload(){
+
+        System.out.println("Server error. Retry?(y/n)");
+        var s = new Scanner(System.in);
+        boolean wait = s.next().charAt(0) == 'y';
+        s.close();
+        return wait;
+    }
+    public Object getResponse() throws IOException, ClassNotFoundException {
         byte[] data;
         try {
             var len = ByteBuffer.wrap(new byte[4]);
@@ -30,15 +35,20 @@ public class ConnectToServer {
             data = new byte[size];
             channel.receive(ByteBuffer.wrap(data));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            if (ifReload()) return this.getResponse();
+            else{
+                throw e;
+            }
         }
         try(ObjectInput ObjIn = new ObjectInputStream(new ByteArrayInputStream(data))){
             return ObjIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            throw new RuntimeException(e);
+            if (ifReload()) return this.getResponse();
+            else throw e;
         }
     }
-    public  void sentCommand(Command command){
+    public void sentCommand(Command command) throws IOException {
         var b = new ByteArrayOutputStream();
         try (ObjectOutputStream ObjOut = new ObjectOutputStream(b)){
             ObjOut.writeObject(command);
@@ -51,7 +61,10 @@ public class ConnectToServer {
             ByteBuffer data = ByteBuffer.wrap(obj);
             channel.send(data, socket);
         } catch (IOException e) {
-            throw new RuntimeException(e);// надо обработать
+            if (ifReload()) {
+                this.sentCommand(command);
+            }
+            else throw e;
         }
 
     }

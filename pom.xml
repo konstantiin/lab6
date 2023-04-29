@@ -7,10 +7,10 @@
     <artifactId>app</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>lab5</name>
+    <name>lab6</name>
 
     <build>
-        <finalName>Lab5</finalName>
+        <finalName>Lab6</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -35,7 +35,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>client.App</mainClass>
+                            <mainClass>server.main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
