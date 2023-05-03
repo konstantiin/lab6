@@ -1,8 +1,8 @@
 package common.commands.concreteCommands.serverOnly;
 
+import client.reading.readers.Reader;
 import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.IdException;
-import client.reading.readers.Reader;
 
 import java.math.BigInteger;
 
@@ -14,10 +14,11 @@ import static server.launcher.CommandsLauncher.currentScripts;
 public class Update extends Command {
     private long id;
     private Object arg;
+
     @Override
     public Object execute() {
         try {
-            collection.update(id,arg );
+            collection.update(id, arg);
             return "Element updated";
         } catch (IdException e) {
             return "Id not found";

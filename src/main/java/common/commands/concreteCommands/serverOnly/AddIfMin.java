@@ -1,7 +1,7 @@
 package common.commands.concreteCommands.serverOnly;
 
-import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 
 import static server.launcher.CommandsLauncher.currentScripts;
 
@@ -10,8 +10,9 @@ import static server.launcher.CommandsLauncher.currentScripts;
  */
 public class AddIfMin extends Command {
     private Object arg;
+
     @Override
-    public void setArgs(Reader from){
+    public void setArgs(Reader from) {
         arg = from.readObject();
     }
 

@@ -1,7 +1,7 @@
 package common.commands.concreteCommands.serverOnly;
 
-import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 
 import java.io.Serializable;
 
@@ -13,6 +13,7 @@ import static server.launcher.CommandsLauncher.currentScripts;
 public class RemoveLower extends Command implements Serializable {
 
     private Object arg;
+
     @Override
     public Object execute() {
         collection.removeLower(arg); // mb print amount of deleted elements

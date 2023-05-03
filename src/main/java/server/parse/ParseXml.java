@@ -1,13 +1,12 @@
 package server.parse;
 
-import common.StoredClasses.HumanBeing;
-import common.StoredClasses.forms.HumanBeingForm;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.io.StreamException;
 import com.thoughtworks.xstream.mapper.CannotResolveClassException;
 import com.thoughtworks.xstream.security.AnyTypePermission;
-
+import common.StoredClasses.HumanBeing;
+import common.StoredClasses.forms.HumanBeingForm;
 import common.exceptions.fileExceptions.FIleDoesNotExistException;
 import common.exceptions.fileExceptions.FileNotReadableException;
 import common.exceptions.fileExceptions.FileNotWritableException;

@@ -1,8 +1,8 @@
 package client.reading.readers;
 
 
-import org.apache.commons.lang3.StringUtils;
 import client.reading.objectTree.Node;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileInputStream;
 import java.util.NoSuchElementException;
@@ -51,6 +51,7 @@ public class OfflineReader extends Reader {
 
     /**
      * applies skipPattern to certain Scanner
+     *
      * @param s - input scanner
      */
     private void skip(Scanner s) {

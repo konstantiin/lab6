@@ -7,5 +7,8 @@ public class EmptyStringException extends InputException {
     public EmptyStringException() {
         super();
     }
-    public EmptyStringException(String s){super(s);}
+
+    public EmptyStringException(String s) {
+        super(s);
+    }
 }

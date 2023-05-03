@@ -1,5 +1,6 @@
 package client.reading.readers;
 
+import client.reading.objectTree.Node;
 import common.commands.abstraction.Command;
 import common.commands.concreteCommands.clientOnly.ExecuteScript;
 import common.commands.concreteCommands.clientOnly.Exit;
@@ -7,7 +8,6 @@ import common.commands.concreteCommands.clientOnly.Help;
 import common.commands.concreteCommands.serverOnly.*;
 import common.exceptions.inputExceptions.*;
 import org.apache.commons.lang3.StringUtils;
-import client.reading.objectTree.Node;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -28,14 +28,13 @@ public abstract class Reader {
      */
     protected final HashMap<String, Command> commands = new HashMap<>();
     /**
-     * Scanner from which data will be taken
-     */
-    protected Scanner scan;
-    /**
      * Node, which is pointing to root of Object tree
      */
     protected final Node objectTree;
-
+    /**
+     * Scanner from which data will be taken
+     */
+    protected Scanner scan;
     /**
      * variable in which stores current depth.
      */
@@ -76,7 +75,7 @@ public abstract class Reader {
     public BigInteger readInt(BigInteger lowerBound, BigInteger upperBound) throws OutOfBoundsException {
         BigInteger value;
         try {
-            value = new  BigInteger(getNext().trim());
+            value = new BigInteger(getNext().trim());
         } catch (NumberFormatException e) {
             throw new WrongInputException("value should be an integer number!");
         }
@@ -95,7 +94,7 @@ public abstract class Reader {
     public BigDecimal readDec(BigDecimal lowerBound, BigDecimal upperBound) throws OutOfBoundsException {
         BigDecimal value;
         try {
-            value = new  BigDecimal(getNext().trim());
+            value = new BigDecimal(getNext().trim());
         } catch (NumberFormatException e) {
             throw new WrongInputException("value should be a decimal number!");
         }
@@ -135,9 +134,10 @@ public abstract class Reader {
         String name = getNext();
         try {
             if (StringUtils.isNumeric(name)) {
-                return ((Object[])type.getMethod("values").invoke(null))[Integer.parseInt(name)-1];
+                return ((Object[]) type.getMethod("values").invoke(null))[Integer.parseInt(name) - 1];
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try {
             return type.getMethod("valueOf", String.class).invoke(null, name);//,tp ji
         } catch (IllegalAccessException | NoSuchMethodException e) {

@@ -1,11 +1,11 @@
 package common.StoredClasses.forms;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import common.StoredClasses.Car;
 import common.StoredClasses.Coordinates;
 import common.StoredClasses.annotations.NotNull;
 import common.StoredClasses.enums.Mood;
 import common.StoredClasses.enums.WeaponType;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * form of HumanBeing

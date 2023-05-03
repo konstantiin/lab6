@@ -10,8 +10,9 @@ public enum WeaponType implements Serializable {
     SHOTGUN,
     RIFLE,
     MACHINE_GUN;
+
     @SuppressWarnings("unused")
-    public static WeaponType valueOf(int i){
-        return WeaponType.values()[i-1];
+    public static WeaponType valueOf(int i) {
+        return WeaponType.values()[i - 1];
     }
 }

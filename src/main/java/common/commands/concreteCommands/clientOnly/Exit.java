@@ -1,7 +1,7 @@
 package common.commands.concreteCommands.clientOnly;
 
-import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 
 import static server.launcher.CommandsLauncher.currentScripts;
 
@@ -10,9 +10,11 @@ import static server.launcher.CommandsLauncher.currentScripts;
  */
 public class Exit extends Command {
     private Reader input;
-    public Exit(){
+
+    public Exit() {
         send = false;
     }
+
     @Override
     public Object execute() {
         input.closeStream();

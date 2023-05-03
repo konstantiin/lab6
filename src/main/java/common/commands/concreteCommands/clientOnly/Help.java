@@ -13,9 +13,10 @@ import static server.launcher.CommandsLauncher.currentScripts;
  * help command
  */
 public class Help extends Command {
-    public Help(){
+    public Help() {
         send = false;
     }
+
     @Override
     public Object execute() {
         try (InputStream inputStream = getClass().getResourceAsStream("/help.txt")) {

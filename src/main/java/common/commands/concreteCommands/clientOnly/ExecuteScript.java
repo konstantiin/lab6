@@ -1,9 +1,9 @@
 package common.commands.concreteCommands.clientOnly;
 
 
-import common.commands.abstraction.Command;
 import client.reading.readers.OfflineReader;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.InputException;
 import common.exceptions.inputExceptions.UnknownCommandException;
 
@@ -17,14 +17,15 @@ import static server.launcher.CommandsLauncher.currentScripts;
  * execute_script command
  */
 public class ExecuteScript extends Command {
-    public ExecuteScript (){
-        send = false;
-    }
     private File script;
     private OfflineReader offlineReader;
     private boolean isOk = true;
+    public ExecuteScript() {
+        send = false;
+    }
+
     @Override
-    public void setArgs(Reader from){
+    public void setArgs(Reader from) {
         File script = new File(from.readString());
         if (currentScripts.contains(script)) {
             System.out.println("Script is already compiling. Command " + this + " was skipped");
@@ -41,12 +42,11 @@ public class ExecuteScript extends Command {
 
 
     /**
-     *
      * @return true if script compiled successfully
      */
     @Override
     public Object execute() {
-        if (isOk){
+        if (isOk) {
             return false;
         }
         currentScripts.add(script);

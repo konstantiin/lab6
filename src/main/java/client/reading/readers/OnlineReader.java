@@ -1,9 +1,9 @@
 package client.reading.readers;
 
+import client.reading.objectTree.Node;
 import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.*;
 import org.apache.commons.lang3.StringUtils;
-import client.reading.objectTree.Node;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -13,11 +13,12 @@ import java.util.Scanner;
 
 
 public class OnlineReader extends Reader {
+    private final InputStream source;
     /**
      * stores last printed character. Used to control \n symbols
      */
     private char lastPrintedChar;
-    private final InputStream source;
+
     public OnlineReader(InputStream source, Node tree) {
         super(source, tree);
         this.source = source;
@@ -25,6 +26,7 @@ public class OnlineReader extends Reader {
 
     /**
      * prints string to System.out stream
+     *
      * @param s - string to be printed
      */
     private void print(String s) {
@@ -54,7 +56,7 @@ public class OnlineReader extends Reader {
             print("\n");
         }
         int bufTabs = tabs;
-        while (true){
+        while (true) {
             try {
                 tabs = bufTabs;
                 print(StringUtils.repeat("\t", tabs + 1) + v.getName() + ": ");
@@ -66,10 +68,12 @@ public class OnlineReader extends Reader {
             }
         }
     }
-    public void renewScan(InputStream in){
+
+    public void renewScan(InputStream in) {
         scan.close();
         scan = new Scanner(in);
     }
+
     @Override
     public Object readObject() {
         tabs = -1;
@@ -163,9 +167,9 @@ public class OnlineReader extends Reader {
 
     @Override
     protected String getNext() {
-        try{
+        try {
             return scan.next();
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return "";
         }
     }

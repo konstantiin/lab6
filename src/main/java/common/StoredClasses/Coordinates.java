@@ -1,8 +1,8 @@
 package common.StoredClasses;
 
-import common.StoredClasses.annotations.Boundaries;
 import client.reading.generators.CoordinatesGenerator;
 import client.reading.generators.Generator;
+import common.StoredClasses.annotations.Boundaries;
 
 import java.io.Serializable;
 

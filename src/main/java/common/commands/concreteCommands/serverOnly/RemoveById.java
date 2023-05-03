@@ -1,8 +1,8 @@
 package common.commands.concreteCommands.serverOnly;
 
+import client.reading.readers.Reader;
 import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.IdException;
-import client.reading.readers.Reader;
 
 import java.math.BigInteger;
 

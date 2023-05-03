@@ -1,7 +1,7 @@
 package common.commands.concreteCommands.serverOnly;
 
-import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 
 import static server.launcher.CommandsLauncher.currentScripts;
 
@@ -11,10 +11,11 @@ import static server.launcher.CommandsLauncher.currentScripts;
 public class FilterContainsName extends Command {
 
     private String name;
+
     @Override
     public Object execute() {
         var list = collection.filterContainsName(name);
-        if (list.size() == 0) return"Nothing matches pattern";
+        if (list.length == 0) return "Nothing matches pattern";
         return list;
     }
 

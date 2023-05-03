@@ -1,7 +1,7 @@
 package common.commands.concreteCommands.serverOnly;
 
-import common.commands.abstraction.Command;
 import client.reading.readers.Reader;
+import common.commands.abstraction.Command;
 
 import java.io.Serializable;
 

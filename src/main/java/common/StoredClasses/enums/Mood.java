@@ -11,8 +11,9 @@ public enum Mood implements Serializable {
     GLOOM,
     CALM,
     FRENZY;
+
     @SuppressWarnings("unused")
-    public static Mood valueOf(int i){
-        return Mood.values()[i-1];
+    public static Mood valueOf(int i) {
+        return Mood.values()[i - 1];
     }
 }
