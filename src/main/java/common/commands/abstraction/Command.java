@@ -1,7 +1,7 @@
 package common.commands.abstraction;
 
-import server.launcher.CommandsLauncher;
 import client.reading.readers.Reader;
+import server.launcher.CommandsLauncher;
 
 import java.io.Serializable;
 
@@ -11,11 +11,17 @@ import java.io.Serializable;
 public abstract class Command implements Serializable {
     protected CommandsLauncher<?> collection;
     protected boolean send = true;
+
     /**
      * default constructor, initialize fields as null
      */
-    public boolean ifSend(){ return  send;}
-    public void setCollection(CommandsLauncher<?> collect){collection=collect;}
+    public boolean ifSend() {
+        return send;
+    }
+
+    public void setCollection(CommandsLauncher<?> collect) {
+        collection = collect;
+    }
 
 
     /**
@@ -24,9 +30,10 @@ public abstract class Command implements Serializable {
     public abstract Object execute();
 
     /**
-     * @return command name
+     * sets arguments
      */
     public abstract void setArgs(Reader from);
+
     @Override
     public abstract String toString();
 }

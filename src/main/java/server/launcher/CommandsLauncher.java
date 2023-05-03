@@ -3,12 +3,7 @@ package server.launcher;
 
 import common.StoredClasses.Coordinates;
 import common.StoredClasses.HumanBeing;
-import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.IdException;
-import common.exceptions.inputExceptions.InputException;
-import common.exceptions.inputExceptions.UnknownCommandException;
-import client.App;
-import client.reading.readers.OfflineReader;
 import server.main.Main;
 
 import java.io.File;
@@ -16,7 +11,7 @@ import java.util.*;
 
 
 /**
- * realizes all the common.commands
+ * realizes all the commands
  *
  * @param <T> - stored class
  */
@@ -57,12 +52,12 @@ public class CommandsLauncher<T extends Comparable<T>> {
 
     public boolean addIfMin(Object element) {
         T value = (T) element;
-
         if (value.compareTo(collection.first()) < 0) {
             this.add(value);
             return true;
         }
         return false;
+
     }
 
     /**
@@ -71,13 +66,10 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * @param pattern - substring to search in names
      * @return list of elements with give substring in names
      */
-    public List<HumanBeing> filterContainsName(String pattern) {
-        List<HumanBeing> result = new ArrayList<>();
-        collection.forEach(el -> {
-            HumanBeing human = (HumanBeing) el;
-            if (human.getName().contains(pattern)) result.add(human);
-        });
-        return result;
+    public Object[] filterContainsName(String pattern) {
+
+        return collection.stream().filter(h ->
+                ((HumanBeing) h).getName().contains(pattern)).toArray();
     }
 
     /**
@@ -87,18 +79,18 @@ public class CommandsLauncher<T extends Comparable<T>> {
      */
     public HashMap<Coordinates, List<HumanBeing>> groupCountingByCoordinates() {
         HashMap<Coordinates, List<HumanBeing>> groups = new HashMap<>();
-        for (T element : collection) {
-            HumanBeing human = (HumanBeing) element;
+
+        collection.forEach(h -> {
+            var human = (HumanBeing) h;
             if (groups.containsKey(human.getCoordinates())) {
                 groups.get(human.getCoordinates()).add(human);
-                continue;
+            } else {
+                var value = new ArrayList<HumanBeing>();
+                value.add(human);
+                groups.put(human.getCoordinates(), value);
             }
-            var value = new ArrayList<HumanBeing>();
-            value.add(human);
-            groups.put(human.getCoordinates(), value);
-        }
+        });
         return groups;
-
     }
 
     /**
@@ -115,51 +107,41 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * @throws IdException - if element with id does not exist
      */
     public void removeById(long id) throws IdException {
-        for (var x : collection) {
-            HumanBeing human = (HumanBeing) x;
-            if (human.getId() == id) {
-                HumanBeing.ids.remove(id);
-                collection.remove(x);
-                return;
-            }
-        }
-        throw new IdException("Not valid id");
+        long c = collection.stream().filter(h -> ((HumanBeing) h).getId() == id).count();
+        if (c == 0) throw new IdException("Not valid id");
+        collection.stream().filter(h -> ((HumanBeing) h).getId() == id).forEach(collection::remove);
+
     }
 
     /**
      * removes all the elements that are less than given element
      *
      * @param element - element to compare
-     */    @SuppressWarnings("unchecked")
+     */
+    @SuppressWarnings("unchecked")
 
     public void removeLower(Object element) {
         T value = (T) element;
-        T lower = collection.lower(value);
-        while (lower != null) {
-            if (lower instanceof HumanBeing){
-                HumanBeing.ids.remove(((HumanBeing) lower).getId());
-            }
-            collection.remove(lower);
-            lower = collection.lower(value);
-        }
+        collection.stream().filter(h -> h.compareTo(value) < 0).forEach(h -> {
+            HumanBeing.ids.remove(((HumanBeing) h).getId());
+            collection.remove(h);
+        });
     }
 
     /**
      * removes all the elements that are greater than given element
      *
      * @param element - element to compare
-     */    @SuppressWarnings("unchecked")
+     */
+    @SuppressWarnings("unchecked")
 
     public void removeGreater(Object element) {
         T value = (T) element;
-        T greater = collection.higher(value);
-        while (greater != null) {
-            if (greater instanceof HumanBeing){
-                HumanBeing.ids.remove(((HumanBeing) greater).getId());
-            }
-            collection.remove(greater);
-            greater = collection.higher(value);
-        }
+        collection.stream().filter(h -> h.compareTo(value) > 0).forEach(h -> {
+            HumanBeing.ids.remove(((HumanBeing) h).getId());
+            collection.remove(h);
+        });
+
     }
 
     /**
@@ -174,10 +156,10 @@ public class CommandsLauncher<T extends Comparable<T>> {
      */
     public double sumOfImpactSpeed() {
         Float sum = (float) 0;
-        final ArrayList <Float> arr = new ArrayList<>();
-        collection.forEach((e) -> arr.add(((HumanBeing)e).getImpactSpeed()));
+        final ArrayList<Float> arr = new ArrayList<>();
+        collection.forEach((e) -> arr.add(((HumanBeing) e).getImpactSpeed()));
         return (double) arr.stream()
-                        .reduce(sum, Float::sum);
+                .reduce(sum, Float::sum);
     }
 
     /**
@@ -188,14 +170,10 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * @throws IdException - if element with id does not exist
      */
     public void update(long id, Object element) throws IdException {
-        for (var item : collection) {
-            HumanBeing human = (HumanBeing) item;
-            if (human.getId() == id) {
-                human.update((HumanBeing) element);
-                return;
-            }
-        }
-        throw new IdException("Not valid id");
+        long c = collection.stream().filter(h -> ((HumanBeing) h).getId() == id).count();
+        if (c == 0) throw new IdException("Not valid id");
+        collection.stream().filter(h -> ((HumanBeing) h).getId() == id).forEach(h -> ((HumanBeing) h).update((HumanBeing) element));
+
     }
 
     /**
@@ -207,16 +185,26 @@ public class CommandsLauncher<T extends Comparable<T>> {
     }
 
     /**
-     * executes script
-     *
-     * @param reader - Reader of script
-     */
-
-    /**
      * saves collection
      */
     @SuppressWarnings("unchecked")
-    public void save() {
-        Main.XMLInput.writeArr(new ArrayList<>((Collection< HumanBeing>) collection));
+    private void save() {
+        Main.XMLInput.writeArr(new ArrayList<>((Collection<HumanBeing>) collection));
+    }
+
+    public boolean runServerCommand(String command) {
+        if (command.equals("save")) {                           // мне лень переписывать эти ифы.
+            this.save();
+            System.out.println("Collection saved");
+            return true;
+        }
+        if (command.equals("interrupt")) {
+            this.save();
+            System.out.println("Program interrupted");
+            return false;
+        }
+
+        System.out.println("Unknown command.");
+        return true;
     }
 }
