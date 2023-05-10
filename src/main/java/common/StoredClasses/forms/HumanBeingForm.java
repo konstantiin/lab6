@@ -1,5 +1,6 @@
 package common.StoredClasses.forms;
 
+import client.reading.generators.HumanBeingFormGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import common.StoredClasses.Car;
 import common.StoredClasses.Coordinates;
@@ -31,6 +32,10 @@ public class HumanBeingForm {
         this.weaponType = weaponType;
         this.mood = mood;
         this.car = car;
+    }
+
+    public static Object getGenerator() {
+        return new HumanBeingFormGenerator();
     }
 
     public String getName() {

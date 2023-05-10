@@ -2,6 +2,8 @@ package common.commands.concreteCommands.serverOnly;
 
 
 import client.reading.readers.Reader;
+import common.StoredClasses.HumanBeing;
+import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
 
 import static server.launcher.CommandsLauncher.currentScripts;
@@ -15,8 +17,8 @@ public class RemoveGreater extends Command {
 
     @Override
     public Object execute() {
-        collection.removeGreater(arg);
-        return "Elements removed";             // mb print amount of deleted elements
+        collection.removeGreater(new HumanBeing((HumanBeingForm) arg));
+        return "Elements removed";
     }
 
     @Override

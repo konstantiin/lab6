@@ -1,6 +1,8 @@
 package common.commands.concreteCommands.serverOnly;
 
 import client.reading.readers.Reader;
+import common.StoredClasses.HumanBeing;
+import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ public class RemoveLower extends Command implements Serializable {
 
     @Override
     public Object execute() {
-        collection.removeLower(arg); // mb print amount of deleted elements
+        collection.removeLower(new HumanBeing((HumanBeingForm) arg));
         return "Elements removed";
     }
 

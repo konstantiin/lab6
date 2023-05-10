@@ -5,11 +5,12 @@ import common.commands.abstraction.Command;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class ConnectToServer {
 
@@ -26,9 +27,8 @@ public class ConnectToServer {
 
         System.out.println("Server error. Retry?(y/n)");
         var s = new Scanner(System.in);
-        boolean wait = s.next().charAt(0) == 'y';
-        s.close();
-        return wait;
+
+        return s.next().charAt(0) == 'y';
     }
 
     public static ConnectToServer getServer(String hostName, int port) {
@@ -51,43 +51,41 @@ public class ConnectToServer {
         return server;
     }
 
-    private void receive(ByteBuffer buf, int tries) throws IOException {
+    private void receive(ByteBuffer buf) {
         try {
-            var res = channel.receive(buf);
-            if (res == null) {
-                if (tries > 5) {
+            SocketAddress res = null;
+            var cur = LocalDateTime.now();
+            while (res == null) {
+                if (LocalDateTime.now().getSecond() - cur.getSecond() > 10) {
                     throw new IOException();
                 }
-                try {
-                    TimeUnit.SECONDS.sleep(5);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                receive(buf, tries + 1);
+                res = channel.receive(buf);
+
             }
         } catch (IOException e) {
-            if (ifReload()) this.receive(buf, tries + 1);
-            else {
-                throw e;
+            if (ifReload()) {
+                this.receive(buf);
+            } else {
+                throw new RuntimeException(e);
             }
         }
 
     }
 
-    public Object getResponse() throws IOException, ClassNotFoundException {
+    public Object getResponse() {
         byte[] data;
 
         var len = ByteBuffer.wrap(new byte[4]);
-        this.receive(len, 0);
+        this.receive(len);
         len.flip();
         int size = len.getInt();
         data = new byte[size];
-        this.receive(ByteBuffer.wrap(data), 0);
+        this.receive(ByteBuffer.wrap(data));
         try (ObjectInput ObjIn = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return ObjIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
             if (ifReload()) return this.getResponse();
-            else throw e;
+            else throw new RuntimeException(e);
         }
     }
 

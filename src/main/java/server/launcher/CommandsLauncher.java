@@ -188,12 +188,12 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * saves collection
      */
     @SuppressWarnings("unchecked")
-    private void save() {
+    public void save() {
         Main.XMLInput.writeArr(new ArrayList<>((Collection<HumanBeing>) collection));
     }
 
     public boolean runServerCommand(String command) {
-        if (command.equals("save")) {                           // мне лень переписывать эти ифы.
+        if (command.equals("save")) {
             this.save();
             System.out.println("Collection saved");
             return true;

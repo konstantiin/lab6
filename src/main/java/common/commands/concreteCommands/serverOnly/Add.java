@@ -1,6 +1,8 @@
 package common.commands.concreteCommands.serverOnly;
 
 import client.reading.readers.Reader;
+import common.StoredClasses.HumanBeing;
+import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
 
 import static server.launcher.CommandsLauncher.currentScripts;
@@ -20,7 +22,7 @@ public class Add extends Command {
 
     @Override
     public Object execute() {
-        collection.add(arg);
+        collection.add(new HumanBeing((HumanBeingForm) arg));
         return "element added";
     }
 

@@ -10,7 +10,9 @@ import common.exceptions.inputExceptions.UnknownCommandException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import static client.App.server;
 import static server.launcher.CommandsLauncher.currentScripts;
 
 /**
@@ -20,13 +22,14 @@ public class ExecuteScript extends Command {
     private File script;
     private OfflineReader offlineReader;
     private boolean isOk = true;
+
     public ExecuteScript() {
         send = false;
     }
 
     @Override
     public void setArgs(Reader from) {
-        File script = new File(from.readString());
+        script = new File(from.readString());
         if (currentScripts.contains(script)) {
             System.out.println("Script is already compiling. Command " + this + " was skipped");
             isOk = false;
@@ -46,7 +49,8 @@ public class ExecuteScript extends Command {
      */
     @Override
     public Object execute() {
-        if (isOk) {
+
+        if (!this.isOk) {
             return false;
         }
         currentScripts.add(script);
@@ -59,9 +63,10 @@ public class ExecuteScript extends Command {
             }
             try {
                 if (met != null) {
-                    System.out.println(met.execute());// send to server
+                    server.sentCommand(met);
+                    System.out.println(server.getResponse());
                 }
-            } catch (InputException e) {
+            } catch (InputException | IOException e) {
                 System.out.println(e.getMessage() + " Command " + met + " was skipped");
                 offlineReader.skipTillNextCommand();
             }

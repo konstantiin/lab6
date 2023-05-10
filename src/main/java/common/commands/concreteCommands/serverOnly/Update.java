@@ -1,6 +1,8 @@
 package common.commands.concreteCommands.serverOnly;
 
 import client.reading.readers.Reader;
+import common.StoredClasses.HumanBeing;
+import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.IdException;
 
@@ -18,7 +20,7 @@ public class Update extends Command {
     @Override
     public Object execute() {
         try {
-            collection.update(id, arg);
+            collection.update(id, new HumanBeing((HumanBeingForm) arg));
             return "Element updated";
         } catch (IdException e) {
             return "Id not found";

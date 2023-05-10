@@ -30,6 +30,7 @@ public class Main {
                     Command command = (Command) server.getCommand();
                     command.setCollection(collection);
                     Object result = command.execute();
+                    collection.save();
                     server.send(result);
                 }
             }
