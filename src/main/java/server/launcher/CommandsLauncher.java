@@ -38,8 +38,8 @@ public class CommandsLauncher<T extends Comparable<T>> {
      * @param element - element to add
      */
     @SuppressWarnings("unchecked")
-    public void add(Object element) {
-        collection.add((T) element);
+    public Boolean add(Object element) {
+        return collection.add((T) element);
     }
 
     /**

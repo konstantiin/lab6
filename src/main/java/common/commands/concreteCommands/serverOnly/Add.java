@@ -22,8 +22,7 @@ public class Add extends Command {
 
     @Override
     public Object execute() {
-        collection.add(new HumanBeing((HumanBeingForm) arg));
-        return "element added";
+        return collection.add(new HumanBeing((HumanBeingForm) arg));
     }
 
     @Override

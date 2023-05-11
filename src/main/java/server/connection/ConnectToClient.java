@@ -7,21 +7,24 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+
 import java.util.Set;
 
+import static org.apache.commons.lang3.math.NumberUtils.min;
+
 public class ConnectToClient {
-    private final DatagramChannel server;
+    private final DatagramChannel channel;
     private final Selector selector;
     private SocketAddress client;
 
     public ConnectToClient(int port) {
         SocketAddress addr = new InetSocketAddress(port);
         try {
-            server = DatagramChannel.open();
-            server.bind(addr);
+            channel = DatagramChannel.open();
+            channel.bind(addr);
             selector = Selector.open();
-            server.configureBlocking(false);
-            server.register(selector, SelectionKey.OP_READ);
+            channel.configureBlocking(false);
+            channel.register(selector, SelectionKey.OP_READ);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -35,21 +38,39 @@ public class ConnectToClient {
         }
         return selector.selectedKeys();
     }
+    private byte[] receive(int size) throws IOException {
+        var data = new byte[size];
+        int packSize = 100;
+        int i = 0;
+        while (i < size){
+            var j = min(i + packSize, size);
+            var length = j - i;
+
+
+            var dataToReceive = new byte[length];
+            channel.receive(ByteBuffer.wrap(dataToReceive));
+            System.arraycopy(dataToReceive, 0, data, i,length);
+            i = j;
+
+        }
+        return data;
+    }
 
     public Object getCommand() {
         int size;
         try {
             var len = ByteBuffer.wrap(new byte[4]);
-            client = server.receive(len);
+            client = channel.receive(len);
 
             len.flip();
             size = len.getInt();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        byte[] data = new byte[size];
+        byte[] data;
         try {
-            client = server.receive(ByteBuffer.wrap(data));
+            data = receive(size);
+            client = channel.receive(ByteBuffer.wrap(data));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,9 +90,9 @@ public class ConnectToClient {
             var obj = b.toByteArray();
             byte[] size = new byte[4];
 
-            server.send(ByteBuffer.wrap(size).putInt(obj.length).flip(), client);
+            channel.send(ByteBuffer.wrap(size).putInt(obj.length).flip(), client);
             ByteBuffer data = ByteBuffer.wrap(obj);
-            server.send(data, client);
+            channel.send(data, client);
         } catch (IOException e) {
             throw new RuntimeException(e);// надо обработать
         }

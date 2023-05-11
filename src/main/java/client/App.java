@@ -12,6 +12,7 @@ import common.exceptions.inputExceptions.UnknownCommandException;
 
 public class App {
     public static ConnectToServer server;
+    public static OnlineReader console;
 
     /**
      * main method
@@ -26,7 +27,7 @@ public class App {
             return;
         }
 
-        OnlineReader console = new OnlineReader(System.in, Node.generateTree(HumanBeingForm.class, "HumanBeing"));
+        console = new OnlineReader(System.in, Node.generateTree(HumanBeingForm.class, "HumanBeing"));
         while (console.hasNext()) {
             Command met = null;
             try {
@@ -39,7 +40,7 @@ public class App {
             if (met != null) {
                 if (met.ifSend()) {
                     try {
-                        server.sentCommand(met);
+                        server.sendCommand(met);
                         System.out.println(server.getResponse());
                     } catch (Exception e) {
                         System.out.println("Execution ended");

@@ -40,7 +40,7 @@ public class OfflineReader extends Reader {
 
     @Override
     protected String getNext() {
-        if (currentLineScanner.hasNext()) {
+        if (currentLineScanner != null && currentLineScanner.hasNext()) {
             var res = currentLineScanner.next();
             if (!currentLineScanner.hasNext()) readLine();
             return res;
@@ -97,13 +97,18 @@ public class OfflineReader extends Reader {
     @Override
     protected boolean readNull(Node v) {
         boolean x = currentLineScanner.hasNext();
-        boolean y = nextLine.replaceAll(" {4}", "\t").startsWith(StringUtils.repeat("\t", tabs + 1));
+        boolean y;
+        try{
+            y = nextLine.replaceAll(" {4}", "\t").startsWith(StringUtils.repeat("\t", tabs + 1));
+        } catch (Exception e){
+            y = false;
+        }
         return !x && !y;
     }
 
     @Override
     protected boolean checkNotNullObject() {
-        return !nextLine.replaceAll(" {4}", "\t").startsWith(StringUtils.repeat("\t", tabs + 1));
+        return nextLine!=null && !nextLine.replaceAll(" {4}", "\t").startsWith(StringUtils.repeat("\t", tabs + 1));
     }
 
 

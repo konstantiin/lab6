@@ -133,14 +133,10 @@ public class HumanBeing implements Comparable<HumanBeing>, Checkable, Serializab
 
     }
 
-    @Override
-    public int compareTo(HumanBeing o) {
-        return (int) (this.id - o.id);
-    }
-    /*
+
+
     @Override
     public int compareTo(HumanBeing o) {
         return this.name.compareTo(o.name);
     }
-     */
 }

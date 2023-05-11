@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Scanner;
 
+import static org.apache.commons.lang3.math.NumberUtils.min;
+
 public class ConnectToServer {
 
     private final InetSocketAddress socket;
@@ -49,6 +51,23 @@ public class ConnectToServer {
             }
         }
         return server;
+    }
+    private void send(byte[] obj) throws IOException {
+        int packSize = 100;
+        int i = 0;
+        while (i < obj.length){
+            var j = min(i + packSize, obj.length);
+            var length = j - i;
+
+
+            var dataToSend = new byte[length];
+            System.arraycopy(obj, i, dataToSend, 0,length);
+            channel.send(ByteBuffer.wrap(dataToSend), socket);
+
+            i = j;
+
+        }
+
     }
 
     private void receive(ByteBuffer buf) {
@@ -88,8 +107,16 @@ public class ConnectToServer {
             else throw new RuntimeException(e);
         }
     }
+    private boolean confirm(){
+        byte[] buf = new byte[1];
+        try {
+            if (channel.receive(ByteBuffer.wrap(buf)) != null)
+        } catch (IOException e) {
+            return
+        }
+    }
 
-    public void sentCommand(Command command) throws IOException {
+    public void sendCommand(Command command) throws IOException {
         var b = new ByteArrayOutputStream();
         try (ObjectOutputStream ObjOut = new ObjectOutputStream(b)) {
             ObjOut.writeObject(command);
@@ -99,10 +126,10 @@ public class ConnectToServer {
 
             channel.send(ByteBuffer.wrap(size), socket);
             ByteBuffer data = ByteBuffer.wrap(obj);
-            channel.send(data, socket);
+            this.send(obj);
         } catch (IOException e) {
             if (ifReload()) {
-                this.sentCommand(command);
+                this.sendCommand(command);
             } else throw e;
         }
 

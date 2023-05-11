@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static client.App.console;
 import static client.App.server;
 import static server.launcher.CommandsLauncher.currentScripts;
 
@@ -62,11 +63,21 @@ public class ExecuteScript extends Command {
                 System.out.println("No such command: " + e.getMessage() + " command was skipped");
             }
             try {
-                if (met != null) {
-                    server.sentCommand(met);
-                    System.out.println(server.getResponse());
+                assert met != null;
+                if (met.ifSend()) {
+                    try {
+                        server.sendCommand(met);
+                        System.out.println(server.getResponse());
+                    } catch (Exception e) {
+                        System.out.println("Execution ended");
+                        offlineReader.closeStream();
+                        console.closeStream();
+                    }
+
+                } else {
+                    met.execute();
                 }
-            } catch (InputException | IOException e) {
+            } catch (InputException e) {
                 System.out.println(e.getMessage() + " Command " + met + " was skipped");
                 offlineReader.skipTillNextCommand();
             }
