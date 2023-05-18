@@ -1,6 +1,7 @@
 package server.main;
 
 
+import ch.qos.logback.core.read.ListAppender;
 import common.StoredClasses.HumanBeing;
 import common.commands.abstraction.Command;
 import server.connection.ConnectToClient;
@@ -9,6 +10,7 @@ import server.parse.ParseXml;
 
 import java.io.IOException;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.TreeSet;
 import org.slf4j.Logger;
@@ -28,18 +30,22 @@ public class Main {
         Scanner console = new Scanner(System.in);
         while (work) {
             var keys = server.getKeys();
-
-            for (var x : keys) {
-                if (x.isValid()) {
-                    logger.info("Found request");
-                    Command command = (Command) server.getCommand();
-                    command.setCollection(collection);
-                    logger.info("Command received");
-                    Object result = command.execute();
-                    collection.save();
-                    server.send(result);
-                    logger.info("Result send");
+            for (var iter = keys.iterator(); iter.hasNext();) {
+                var key = iter.next();
+                iter.remove();
+                if (key.isValid()) {
+                    logger.info("Found input data from" + key);// хрень
+                    try{
+                        server.read(key);
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
+            }
+            List<Object> input = server.getInputObjects();
+            for (Object obj: input){
+                Command c = (Command) obj;
+                System.out.println(c);//execute command
             }
 
             try {
