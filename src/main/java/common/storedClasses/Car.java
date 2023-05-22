@@ -1,8 +1,8 @@
-package common.StoredClasses;
+package common.storedClasses;
 
 import client.reading.generators.CarGenerator;
 import client.reading.generators.Generator;
-import common.StoredClasses.annotations.NotNull;
+import common.storedClasses.annotations.NotNull;
 
 import java.io.Serializable;
 

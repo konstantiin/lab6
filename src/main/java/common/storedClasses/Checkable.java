@@ -1,9 +1,9 @@
-package common.StoredClasses;
+package common.storedClasses;
 
-import common.StoredClasses.annotations.Boundaries;
-import common.StoredClasses.annotations.NotNull;
 import common.exceptions.inputExceptions.NullObjectException;
 import common.exceptions.inputExceptions.OutOfBoundsException;
+import common.storedClasses.annotations.Boundaries;
+import common.storedClasses.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;

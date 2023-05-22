@@ -1,6 +1,6 @@
 package client.reading.generators;
 
-import common.StoredClasses.Coordinates;
+import common.storedClasses.Coordinates;
 
 import java.util.HashMap;
 

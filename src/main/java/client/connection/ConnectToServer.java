@@ -3,20 +3,19 @@ package client.connection;
 import common.commands.abstraction.Command;
 import common.connection.ObjectByteArrays;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
 
 public class ConnectToServer { // close scanner
-    private int timeOutSec = 10;
+    private final int timeOutSec = 10;
     private static boolean isOk = true;
 
     private final InetSocketAddress socket;
@@ -70,7 +69,7 @@ public class ConnectToServer { // close scanner
             confirm();
             buf.flip();
             byte[] ans = new byte[buf.remaining()];
-            System.arraycopy(buf.array(), 0, ans,0, ans.length);
+            System.arraycopy(buf.array(), 0, ans, 0, ans.length);
             return ans;
         } catch (IOException e) {
             if (ifReload()) {
@@ -81,9 +80,10 @@ public class ConnectToServer { // close scanner
         }
         return new byte[0];
     }
-    private ObjectByteArrays receiveArrays(ObjectByteArrays data){
+
+    private ObjectByteArrays receiveArrays(ObjectByteArrays data) {
         boolean work = true;
-        while (work){
+        while (work) {
             work = data.addNext(receive());
         }
         return data;
@@ -95,6 +95,7 @@ public class ConnectToServer { // close scanner
         var data = ObjectByteArrays.getEmpty(size);
         return this.receiveArrays(data).toObject();
     }
+
     private boolean isConfirmed() {
         byte[] arr = new byte[1];
         var cur = LocalDateTime.now();
@@ -103,37 +104,41 @@ public class ConnectToServer { // close scanner
                 var from = channel.receive(ByteBuffer.wrap(arr));
                 if (!socket.equals(from)) throw new IOException();
                 return arr[0] == 1;
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         return false;
     }
-    private void confirm(){
+
+    private void confirm() {
         sendArr(new byte[]{1});
     }
 
-    private void sendArr(byte[] d){
-        try{
+    private void sendArr(byte[] d) {
+        try {
             channel.send(ByteBuffer.wrap(d), socket);
 
-        } catch (IOException e){
+        } catch (IOException e) {
             if (ifReload()) {
                 sendArr(d);
             }
             throw new RuntimeException(e);
         }
     }
+
     private void sendArrays(ObjectByteArrays data) {
-            byte[] next = data.getNext();
-            while (next.length != 0) {
-                sendArr(next);
-                if (!isConfirmed()){
-                    if (!ifReload()) throw new RuntimeException(new IOException());
-                } else {
-                    next = data.getNext();
-                }
+        byte[] next = data.getNext();
+        while (next.length != 0) {
+            sendArr(next);
+            if (!isConfirmed()) {
+                if (!ifReload()) throw new RuntimeException(new IOException());
+            } else {
+                next = data.getNext();
             }
+        }
     }
-    public void sendCommand(Command command){
+
+    public void sendCommand(Command command) {
         this.sendArrays(ObjectByteArrays.getArrays(command));
     }
 }

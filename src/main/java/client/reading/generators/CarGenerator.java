@@ -1,6 +1,6 @@
 package client.reading.generators;
 
-import common.StoredClasses.Car;
+import common.storedClasses.Car;
 
 import java.util.HashMap;
 

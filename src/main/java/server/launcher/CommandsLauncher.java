@@ -1,9 +1,9 @@
 package server.launcher;
 
 
-import common.StoredClasses.Coordinates;
-import common.StoredClasses.HumanBeing;
 import common.exceptions.inputExceptions.IdException;
+import common.storedClasses.Coordinates;
+import common.storedClasses.HumanBeing;
 import server.main.Main;
 
 import java.io.File;

@@ -4,10 +4,10 @@ package client;
 import client.connection.ConnectToServer;
 import client.reading.objectTree.Node;
 import client.reading.readers.OnlineReader;
-import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
 import common.exceptions.inputExceptions.InputException;
 import common.exceptions.inputExceptions.UnknownCommandException;
+import common.storedClasses.forms.HumanBeingForm;
 
 
 public class App {

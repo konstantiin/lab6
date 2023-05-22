@@ -2,9 +2,9 @@ package common.commands.concreteCommands.serverOnly;
 
 
 import client.reading.readers.Reader;
-import common.StoredClasses.HumanBeing;
-import common.StoredClasses.forms.HumanBeingForm;
 import common.commands.abstraction.Command;
+import common.storedClasses.HumanBeing;
+import common.storedClasses.forms.HumanBeingForm;
 
 import static server.launcher.CommandsLauncher.currentScripts;
 

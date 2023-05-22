@@ -2,19 +2,20 @@ package server.connection;
 
 
 import common.connection.ObjectByteArrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import server.main.Main;
 
-
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-
 import java.util.*;
 
 
-
 public class ConnectToClient {
+    public static final Logger logger = LoggerFactory.getLogger(Main.class);
     private final DatagramChannel channel;
     private final Selector selector;
 
@@ -23,10 +24,13 @@ public class ConnectToClient {
     private final Map<SocketAddress, ObjectByteArrays> answerToClient = new HashMap<>();
 
     private final Map<SocketAddress, Boolean> needConfirm = new HashMap<>();
-    public void setAnswer(SocketAddress client, ObjectByteArrays data){
+
+    public void setAnswer(SocketAddress client, ObjectByteArrays data) {
         answerToClient.put(client, data);
     }
+
     private final List<SocketAddress> complete = new ArrayList<>();
+
     public ConnectToClient(int port) {
         SocketAddress addr = new InetSocketAddress(port);
         try {
@@ -39,9 +43,10 @@ public class ConnectToClient {
             throw new RuntimeException(e);
         }
     }
-    public Map<SocketAddress, ObjectByteArrays> getInputObjects(){
+
+    public Map<SocketAddress, ObjectByteArrays> getInputObjects() {
         Map<SocketAddress, ObjectByteArrays> res = new HashMap<>();
-        for (var i: complete){
+        for (var i : complete) {
             var p = currentInput.get(i);
             res.put(i, p);
             currentInput.remove(i);
@@ -50,6 +55,7 @@ public class ConnectToClient {
         complete.clear();
         return res;
     }
+
     public Set<SelectionKey> getKeys() {
         try {
             selector.selectNow();
@@ -58,7 +64,8 @@ public class ConnectToClient {
         }
         return selector.selectedKeys();
     }
-    private void confirm(SocketAddress client){
+
+    private void confirm(SocketAddress client) {
 
         try {
             channel.send(ByteBuffer.wrap(new byte[]{1}), client);
@@ -66,23 +73,29 @@ public class ConnectToClient {
             return;//хз что делать
         }
     }
-    private void setConfirmed(byte[] in, SocketAddress client, SelectableChannel datagramChannel){
-        if (in.length != 1 || in[0] != 1){
+
+    private void isConfirmed(byte[] in, SocketAddress client, SelectableChannel datagramChannel) {
+        if (in.length != 1 || in[0] != 1) {
             answerToClient.get(client).iterBack();
         }
-        if(!answerToClient.get(client).hasNext()) {
+        if (!answerToClient.get(client).hasNext()) {
             needConfirm.put(client, false);
             try {
                 datagramChannel.register(selector, SelectionKey.OP_READ);
-            } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+            } catch (ClosedChannelException e) {
+                throw new RuntimeException(e);
+            }
             return;
 
         }
         try {
             datagramChannel.register(selector, SelectionKey.OP_WRITE);
-        } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+        } catch (ClosedChannelException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public void read(SelectionKey key){
+
+    public void read(SelectionKey key) {
         var datagramChannel = (DatagramChannel) key.channel();
         ByteBuffer buf = ByteBuffer.allocate(ObjectByteArrays.packageSize);
         SocketAddress client;
@@ -91,77 +104,95 @@ public class ConnectToClient {
         } catch (IOException e) {
             return;
         }
-
         buf.flip();
         byte[] in = new byte[buf.remaining()];
         buf.get(in);
-
-
-        if (needConfirm.containsKey(client) && needConfirm.get(client)){
-            setConfirmed(in, client, datagramChannel);
+        if (needConfirm.containsKey(client) && needConfirm.get(client)) {
+            isConfirmed(in, client, datagramChannel);
             key.attach(client);
             return;
         }
-        if(currentInput.containsKey(client)){
+        if (currentInput.containsKey(client)) {
             boolean ifReady = !currentInput.get(client).addNext(in);
             if (ifReady) {
                 complete.add(client);
                 try {
                     datagramChannel.register(selector, SelectionKey.OP_WRITE);
-                } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+                } catch (ClosedChannelException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } else{
+        } else {
             currentInput.put(client, ObjectByteArrays.getEmpty(ByteBuffer.wrap(in).getInt()));
         }
         confirm(client);
         key.attach(client);
     }
-    public static void readAll(ConnectToClient server){
+
+    public static void readAll(ConnectToClient server) {
         var keys = server.getKeys();
-        for (var iter = keys.iterator(); iter.hasNext();) {
+        for (var iter = keys.iterator(); iter.hasNext(); ) {
             var key = iter.next();
             iter.remove();
+
             if (key.isValid() && key.isReadable()) {
-                try{
+                try {
                     server.read(key);
-                } catch(Exception e){
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.error("While reading from client:"+ e.getMessage());
+
                 }
             }
         }
     }
-    public void write(SelectionKey key){;
-        var client = (SocketAddress)key.attachment();
-        var datagramChannel = (DatagramChannel)key.channel();
+
+    public void write(SelectionKey key) {
+        var client = (SocketAddress) key.attachment();
+        var datagramChannel = (DatagramChannel) key.channel();
         var data = answerToClient.get(client);
         var pack = data.getNext();
 
         try {
-            datagramChannel.send(ByteBuffer.wrap(pack),client);
+            datagramChannel.send(ByteBuffer.wrap(pack), client);
         } catch (IOException e) {
             try {
                 datagramChannel.register(selector, SelectionKey.OP_WRITE);
-            } catch (ClosedChannelException ex) {throw new RuntimeException(ex);}
+            } catch (ClosedChannelException ex) {
+                throw new RuntimeException(ex);
+            }
             data.iterBack();
         }
 
         needConfirm.put(client, true);
         try {
             datagramChannel.register(selector, SelectionKey.OP_READ);
-        } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+        } catch (ClosedChannelException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static void writeAll(ConnectToClient server){
+
+    public static void writeAll(ConnectToClient server) {
         var keys = server.getKeys();
-        for (var iter = keys.iterator(); iter.hasNext();) {
+        for (var iter = keys.iterator(); iter.hasNext(); ) {
             var key = iter.next();
             iter.remove();
             if (key.isValid() && key.isWritable()) {
-                try{
+                try {
                     server.write(key);
-                } catch(Exception e){
-                    e.printStackTrace();// логировать
+                } catch (Exception e) {
+                    logger.error("While writing to   client:"+ e.getMessage());
                 }
             }
         }
+    }
+
+    public void close() {
+        try {
+            channel.close();
+            selector.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

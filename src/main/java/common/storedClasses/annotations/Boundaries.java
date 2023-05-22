@@ -1,4 +1,4 @@
-package common.StoredClasses.annotations;
+package common.storedClasses.annotations;
 
 import java.lang.annotation.*;
 

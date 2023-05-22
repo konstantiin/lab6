@@ -1,10 +1,10 @@
 package client.reading.generators;
 
-import common.StoredClasses.Car;
-import common.StoredClasses.Coordinates;
-import common.StoredClasses.enums.Mood;
-import common.StoredClasses.enums.WeaponType;
-import common.StoredClasses.forms.HumanBeingForm;
+import common.storedClasses.Car;
+import common.storedClasses.Coordinates;
+import common.storedClasses.enums.Mood;
+import common.storedClasses.enums.WeaponType;
+import common.storedClasses.forms.HumanBeingForm;
 
 import java.util.HashMap;
 

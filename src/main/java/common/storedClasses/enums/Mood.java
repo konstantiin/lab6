@@ -1,4 +1,4 @@
-package common.StoredClasses.enums;
+package common.storedClasses.enums;
 
 import java.io.Serializable;
 

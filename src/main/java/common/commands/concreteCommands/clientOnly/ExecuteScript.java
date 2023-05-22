@@ -10,7 +10,6 @@ import common.exceptions.inputExceptions.UnknownCommandException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import static client.App.console;
 import static client.App.server;
