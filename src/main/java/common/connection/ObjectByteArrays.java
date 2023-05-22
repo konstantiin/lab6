@@ -3,12 +3,14 @@ package common.connection;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.commons.lang3.math.NumberUtils.min;
 
 public class ObjectByteArrays {
-    private int packageSize = 256;
+    public static int packageSize = 512;
+
     private int index = 0;
     private final byte[] length;
     private final List<byte[]> data =  new ArrayList<>();
@@ -76,10 +78,25 @@ public class ObjectByteArrays {
     }
     public boolean addNext(byte[] arr){
         assert index <= data.size();
+        assert index >= 1;
         var p = data.get(index-1);
         assert p.length == arr.length;
         System.arraycopy(arr, 0, p, 0, arr.length);
         index++;
-        return index > data.size();
+        return index <= data.size();
+    }
+    public void iterBack(){
+        assert index > 0;
+        index--;
+    }
+    public boolean hasNext(){
+        return index <= data.size();
+    }
+    @Override
+    public String toString(){
+        final StringBuilder s = new StringBuilder();
+        s.append(Arrays.toString(length));
+        data.forEach((arr) -> s.append(Arrays.toString(arr)));
+        return s.toString();
     }
 }

@@ -1,28 +1,31 @@
 package server.connection;
 
+
 import common.connection.ObjectByteArrays;
+
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
+import java.nio.channels.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.apache.commons.lang3.math.NumberUtils.min;
+
 
 public class ConnectToClient {
-    private final int timeOutSec = 10;
     private final DatagramChannel channel;
     private final Selector selector;
 
 
     private final Map<SocketAddress, ObjectByteArrays> currentInput = new HashMap<>();
+    private final Map<SocketAddress, ObjectByteArrays> answerToClient = new HashMap<>();
+
+    private final Map<SocketAddress, Boolean> needConfirm = new HashMap<>();
+    public void setAnswer(SocketAddress client, ObjectByteArrays data){
+        answerToClient.put(client, data);
+    }
     private final List<SocketAddress> complete = new ArrayList<>();
     public ConnectToClient(int port) {
         SocketAddress addr = new InetSocketAddress(port);
@@ -36,13 +39,14 @@ public class ConnectToClient {
             throw new RuntimeException(e);
         }
     }
-    public List<Object> getInputObjects(){
-        List<Object> res = new ArrayList<>();
+    public Map<SocketAddress, ObjectByteArrays> getInputObjects(){
+        Map<SocketAddress, ObjectByteArrays> res = new HashMap<>();
         for (var i: complete){
-            res.add(currentInput.get(i).toObject());
+            var p = currentInput.get(i);
+            res.put(i, p);
             currentInput.remove(i);
         }
-        if (res.size() != complete.size()) throw new RuntimeException(complete.toString());
+        assert res.size() == complete.size();
         complete.clear();
         return res;
     }
@@ -62,30 +66,102 @@ public class ConnectToClient {
             return;//хз что делать
         }
     }
+    private void setConfirmed(byte[] in, SocketAddress client, SelectableChannel datagramChannel){
+        if (in.length != 1 || in[0] != 1){
+            answerToClient.get(client).iterBack();
+        }
+        if(!answerToClient.get(client).hasNext()) {
+            needConfirm.put(client, false);
+            try {
+                datagramChannel.register(selector, SelectionKey.OP_READ);
+            } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+            return;
+
+        }
+        try {
+            datagramChannel.register(selector, SelectionKey.OP_WRITE);
+        } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+    }
     public void read(SelectionKey key){
         var datagramChannel = (DatagramChannel) key.channel();
-        ByteBuffer buf = ByteBuffer.allocate(256);
+        ByteBuffer buf = ByteBuffer.allocate(ObjectByteArrays.packageSize);
         SocketAddress client;
         try {
             client = datagramChannel.receive(buf);
         } catch (IOException e) {
-            return;// мб надо что-то сделать, но я хз что и надо ли
+            return;
         }
+
         buf.flip();
         byte[] in = new byte[buf.remaining()];
         buf.get(in);
+
+
+        if (needConfirm.containsKey(client) && needConfirm.get(client)){
+            setConfirmed(in, client, datagramChannel);
+            key.attach(client);
+            return;
+        }
         if(currentInput.containsKey(client)){
-            boolean ifReady = currentInput.get(client).addNext(in);
-            if (ifReady) complete.add(client);
+            boolean ifReady = !currentInput.get(client).addNext(in);
+            if (ifReady) {
+                complete.add(client);
+                try {
+                    datagramChannel.register(selector, SelectionKey.OP_WRITE);
+                } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+            }
         } else{
             currentInput.put(client, ObjectByteArrays.getEmpty(ByteBuffer.wrap(in).getInt()));
-
-        }
-        try {
-            datagramChannel.register(selector, SelectionKey.OP_READ);
-        } catch (ClosedChannelException e) {
-            throw new RuntimeException(e);
         }
         confirm(client);
+        key.attach(client);
+    }
+    public static void readAll(ConnectToClient server){
+        var keys = server.getKeys();
+        for (var iter = keys.iterator(); iter.hasNext();) {
+            var key = iter.next();
+            iter.remove();
+            if (key.isValid() && key.isReadable()) {
+                try{
+                    server.read(key);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public void write(SelectionKey key){;
+        var client = (SocketAddress)key.attachment();
+        var datagramChannel = (DatagramChannel)key.channel();
+        var data = answerToClient.get(client);
+        var pack = data.getNext();
+
+        try {
+            datagramChannel.send(ByteBuffer.wrap(pack),client);
+        } catch (IOException e) {
+            try {
+                datagramChannel.register(selector, SelectionKey.OP_WRITE);
+            } catch (ClosedChannelException ex) {throw new RuntimeException(ex);}
+            data.iterBack();
+        }
+
+        needConfirm.put(client, true);
+        try {
+            datagramChannel.register(selector, SelectionKey.OP_READ);
+        } catch (ClosedChannelException e) {throw new RuntimeException(e);}
+    }
+    public static void writeAll(ConnectToClient server){
+        var keys = server.getKeys();
+        for (var iter = keys.iterator(); iter.hasNext();) {
+            var key = iter.next();
+            iter.remove();
+            if (key.isValid() && key.isWritable()) {
+                try{
+                    server.write(key);
+                } catch(Exception e){
+                    e.printStackTrace();// логировать
+                }
+            }
+        }
     }
 }

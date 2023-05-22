@@ -56,8 +56,9 @@ public class ConnectToServer { // close scanner
         return server;
     }
 
-    private void receive(ByteBuffer buf) {
+    private byte[] receive() {
         try {
+            ByteBuffer buf = ByteBuffer.allocate(ObjectByteArrays.packageSize);
             SocketAddress res = null;
             var cur = LocalDateTime.now();
             while (res == null) {
@@ -67,31 +68,31 @@ public class ConnectToServer { // close scanner
                 res = channel.receive(buf);
             }
             confirm();
+            buf.flip();
+            byte[] ans = new byte[buf.remaining()];
+            System.arraycopy(buf.array(), 0, ans,0, ans.length);
+            return ans;
         } catch (IOException e) {
             if (ifReload()) {
-                this.receive(buf);
+                this.receive();
             } else {
                 throw new RuntimeException(e);
             }
         }
-
+        return new byte[0];
     }
     private ObjectByteArrays receiveArrays(ObjectByteArrays data){
-        var cur = data.getNext();
-        while (cur != null){
-            receive(ByteBuffer.wrap(cur));
-            cur = data.getNext();
+        boolean work = true;
+        while (work){
+            work = data.addNext(receive());
         }
         return data;
     }
 
     public Object getResponse() {
-        var len = ByteBuffer.wrap(new byte[4]);
-        this.receive(len);
-        len.flip();
-        int size = len.getInt();
+        int size = ByteBuffer.wrap(this.receive()).getInt();
+
         var data = ObjectByteArrays.getEmpty(size);
-        data.getNext();// shift pointer
         return this.receiveArrays(data).toObject();
     }
     private boolean isConfirmed() {
@@ -113,6 +114,7 @@ public class ConnectToServer { // close scanner
     private void sendArr(byte[] d){
         try{
             channel.send(ByteBuffer.wrap(d), socket);
+
         } catch (IOException e){
             if (ifReload()) {
                 sendArr(d);

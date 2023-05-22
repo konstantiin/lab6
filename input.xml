@@ -1,5 +1,15 @@
 <elements>
   <human>
+    <name>1</name>
+    <coordinates>
+      <x>1.0</x>
+      <y>1</y>
+    </coordinates>
+    <realHero>true</realHero>
+    <weaponType>PISTOL</weaponType>
+    <mood>SORROW</mood>
+  </human>
+  <human>
     <name>HumanBeing:</name>
     <coordinates>
       <x>1.0</x>
